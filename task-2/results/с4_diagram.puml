@@ -1,0 +1,21 @@
+@startuml
+!include https://raw.githubusercontent.com/plantuml-stdlib/C4-PlantUML/master/C4_Context.puml
+
+title Контекстная диаграмма системы генерации B2B-прайс-листов (To-Be)
+
+Person(admin, "Администратор", "Настраивает расписание и мониторит выполнение")
+Person(manager, "Менеджер B2B", "Запрашивает прайс-листы для клиентов")
+
+System(priceSystem, "Система генерации прайс-листов", "Ежедневно в 6:00 формирует CSV-прайс-листы на основе данных из PostgreSQL")
+
+System_Ext(db, "PostgreSQL", "Хранит данные о товарах, категориях, клиентах и ценах")
+System_Ext(storage, "Файловое хранилище (S3)", "Хранит сгенерированные CSV-файлы")
+System_Ext(monitoring, "Система мониторинга", "Собирает логи и метрики выполнения")
+
+Rel(admin, priceSystem, "Настраивает и управляет")
+Rel(priceSystem, db, "Извлекает данны")
+Rel(priceSystem, storage, "Сохраняет CSV-файлы")
+Rel(priceSystem, monitoring, "Отправляет логи и метрики")
+Rel(manager, storage, "Скачивает готовые прайс-листы")
+
+@enduml

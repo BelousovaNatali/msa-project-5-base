@@ -1,0 +1,14 @@
+{
+  "name": "data-exporter",
+  "version": "1.0.0",
+  "description": "Ежедневная выгрузка данных из PostgreSQL в CSV",
+  "main": "generator.js",
+  "scripts": {
+    "start": "node generator.js"
+  },
+  "dependencies": {
+    "pg": "^8.11.0",
+    "@aws-sdk/client-s3": "^3.400.0",
+    "dotenv": "^16.3.1"
+  }
+}
