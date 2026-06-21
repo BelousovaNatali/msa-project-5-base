@@ -1,0 +1,72 @@
+@startuml
+!include https://raw.githubusercontent.com/plantuml-stdlib/C4-PlantUML/master/C4_Container.puml
+
+title Диаграмма контейнеров TradeWare с мониторингом и логированием
+
+Person(worker, "Сотрудник склада", "Загружает отчёты об остатках")
+Person(admin, "Администратор", "Мониторит систему и реагирует на инциденты")
+Person(dev, "Разработчик", "Анализирует логи и ошибки")
+
+System_Boundary(tradeware, "TradeWare System") {
+
+    Container(frontend, "Веб-интерфейс", "Angular, WebSockets", "Интерфейс для загрузки отчётов и просмотра остатков")
+
+    Container(api, "API Gateway", "Spring Cloud Gateway", "Маршрутизация запросов, аутентификация")
+
+    Container(monolith, "Монолитное приложение", "Java 11, WildFly", "Основная бизнес-логика (постепенно выносится)")
+
+    Container(batch, "Spring Batch", "Java 11, Spring Boot", "ETL-обработка CSV-файлов")
+
+    Container(scheduler, "Планировщик", "Spring Scheduler", "Запуск пакетных задач по расписанию")
+
+    ContainerDb(db, "Основная БД", "PostgreSQL", "Хранит данные о товарах, остатках, справочниках")
+
+    ContainerDb(metadata, "Метаданные Spring Batch", "PostgreSQL", "Хранит статусы Job и Step")
+
+    Container(storage, "Файловое хранилище", "Google Cloud Storage", "Хранит загруженные CSV-файлы")
+}
+
+System_Boundary(monitoring_system, "Система мониторинга и логирования") {
+
+    Container(prometheus, "Prometheus", "Сбор метрик")
+
+    Container(grafana, "Grafana", "Визуализация метрик и дашборды")
+
+    Container(alertmanager, "Alertmanager", "Управление оповещениями")
+
+    Container(elasticsearch, "Elasticsearch", "Хранение и индексация логов")
+
+    Container(logstash, "Logstash", "Обработка и обогащение логов")
+
+    Container(kibana, "Kibana", "Визуализация логов и поиск")
+}
+
+System_Ext(notification, "Каналы оповещений", "Slack, Email, Telegram")
+
+Rel(worker, frontend, "Загружает CSV-файл", "HTTPS")
+Rel(frontend, api, "Отправляет запросы", "REST API")
+Rel(api, monolith, "Маршрутизирует запросы", "HTTP")
+Rel(api, batch, "Запускает Batch Job", "HTTP")
+
+Rel(batch, storage, "Читает CSV-файл", "GCS API")
+Rel(batch, db, "Читает справочники", "JDBC")
+Rel(batch, db, "Записывает обработанные данные", "JDBC")
+Rel(batch, metadata, "Сохраняет статус Job", "JDBC")
+
+Rel(scheduler, batch, "Запускает ночные задачи", "HTTP")
+
+Rel(monolith, prometheus, "Экспортирует метрики", "/actuator/prometheus")
+Rel(batch, prometheus, "Экспортирует метрики", "/actuator/prometheus")
+Rel(prometheus, grafana, "Предоставляет данные для дашбордов", "PromQL")
+Rel(prometheus, alertmanager, "Отправляет алерты", "HTTP")
+
+Rel(monolith, logstash, "Отправляет логи", "JSON over HTTP")
+Rel(batch, logstash, "Отправляет логи", "JSON over HTTP")
+Rel(logstash, elasticsearch, "Индексирует логи", "HTTP")
+Rel(elasticsearch, kibana, "Предоставляет данные для поиска", "HTTP")
+
+Rel(alertmanager, notification, "Отправляет оповещения", "Webhook")
+Rel(admin, grafana, "Просматривает дашборды", "HTTPS")
+Rel(dev, kibana, "Анализирует логи и ошибки", "HTTPS")
+
+@enduml
