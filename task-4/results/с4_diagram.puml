@@ -9,13 +9,13 @@ Person(partner, "Логистический партнёр", "Получает �
 
 System_Boundary(tradeware, "TradeWare System") {
 
-    Container(frontend, "Веб-интерфейс", "Angular, WebSockets", "Интерфейс для загрузки отчётов и просмотра остатков")
+    Container(frontend, "Веб-интерфейс", "Интерфейс для загрузки отчётов и просмотра остатков")
 
-    Container(api, "API Gateway", "Spring Cloud Gateway", "Маршрутизация запросов, аутентификация")
+    Container(api, "API Gateway", "Маршрутизация запросов, аутентификация")
 
-    Container(monolith, "Монолитное приложение", "Java 11, WildFly", "Основная бизнес-логика (постепенно выносится)")
+    Container(monolith, "Монолитное приложение", "Основная бизнес-логика (постепенно выносится)")
 
-    Container(batch, "Spring Batch", "Java 11, Spring Boot", "ETL-обработка CSV-файлов")
+    Container(batch, "Spring Batch", "ETL-обработка CSV-файлов")
 
     Container(scheduler, "Планировщик", "Spring Scheduler", "Запуск пакетных задач по расписанию")
 
@@ -26,18 +26,18 @@ System_Boundary(tradeware, "TradeWare System") {
     Container(storage, "Файловое хранилище", "Google Cloud Storage", "Хранит загруженные CSV-файлы")
 }
 
-Rel(worker, frontend, "Загружает CSV-файл", "HTTPS")
-Rel(manager, frontend, "Просматривает остатки", "HTTPS")
-Rel(partner, api, "Получает данные о перемещениях", "REST API")
-Rel(frontend, api, "Отправляет запросы", "REST API")
-Rel(api, monolith, "Маршрутизирует запросы", "HTTP")
-Rel(api, batch, "Запускает Batch Job", "HTTP")
+Rel(worker, frontend, "Загружает CSV-файл")
+Rel(manager, frontend, "Просматривает остатки")
+Rel(partner, api, "Получает данные о перемещениях")
+Rel(frontend, api, "Отправляет запросы")
+Rel(api, monolith, "Маршрутизирует запросы")
+Rel(api, batch, "Запускает Batch Job")
 
-Rel(batch, storage, "Читает CSV-файл", "GCS API")
-Rel(batch, db, "Читает справочники", "JDBC")
-Rel(batch, db, "Записывает обработанные данные", "JDBC")
-Rel(batch, metadata, "Сохраняет статус Job", "JDBC")
+Rel(batch, storage, "Читает CSV-файл")
+Rel(batch, db, "Читает справочники")
+Rel(batch, db, "Записывает обработанные данные")
+Rel(batch, metadata, "Сохраняет статус Job")
 
-Rel(scheduler, batch, "Запускает ночные задачи", "HTTP")
+Rel(scheduler, batch, "Запускает ночные задачи")
 
 @enduml

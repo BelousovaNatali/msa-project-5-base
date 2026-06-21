@@ -9,13 +9,13 @@ Person(dev, "Разработчик", "Анализирует логи и оши
 
 System_Boundary(tradeware, "TradeWare System") {
 
-    Container(frontend, "Веб-интерфейс", "Angular, WebSockets", "Интерфейс для загрузки отчётов и просмотра остатков")
+    Container(frontend, "Веб-интерфейс", "Интерфейс для загрузки отчётов и просмотра остатков")
 
-    Container(api, "API Gateway", "Spring Cloud Gateway", "Маршрутизация запросов, аутентификация")
+    Container(api, "API Gateway", "Маршрутизация запросов, аутентификация")
 
-    Container(monolith, "Монолитное приложение", "Java 11, WildFly", "Основная бизнес-логика (постепенно выносится)")
+    Container(monolith, "Монолитное приложение", "Основная бизнес-логика (постепенно выносится)")
 
-    Container(batch, "Spring Batch", "Java 11, Spring Boot", "ETL-обработка CSV-файлов")
+    Container(batch, "Spring Batch", "ETL-обработка CSV-файлов")
 
     Container(scheduler, "Планировщик", "Spring Scheduler", "Запуск пакетных задач по расписанию")
 
@@ -41,32 +41,32 @@ System_Boundary(monitoring_system, "Система мониторинга и л�
     Container(kibana, "Kibana", "Визуализация логов и поиск")
 }
 
-System_Ext(notification, "Каналы оповещений", "Slack, Email, Telegram")
+System_Ext(notification, "Каналы оповещений", "Email, Telegram")
 
-Rel(worker, frontend, "Загружает CSV-файл", "HTTPS")
-Rel(frontend, api, "Отправляет запросы", "REST API")
-Rel(api, monolith, "Маршрутизирует запросы", "HTTP")
-Rel(api, batch, "Запускает Batch Job", "HTTP")
+Rel(worker, frontend, "Загружает CSV-файл")
+Rel(frontend, api, "Отправляет запросы")
+Rel(api, monolith, "Маршрутизирует запросы")
+Rel(api, batch, "Запускает Batch Job")
 
-Rel(batch, storage, "Читает CSV-файл", "GCS API")
-Rel(batch, db, "Читает справочники", "JDBC")
-Rel(batch, db, "Записывает обработанные данные", "JDBC")
-Rel(batch, metadata, "Сохраняет статус Job", "JDBC")
+Rel(batch, storage, "Читает CSV-файл")
+Rel(batch, db, "Читает справочники")
+Rel(batch, db, "Записывает обработанные данные")
+Rel(batch, metadata, "Сохраняет статус Job")
 
-Rel(scheduler, batch, "Запускает ночные задачи", "HTTP")
+Rel(scheduler, batch, "Запускает ночные задачи")
 
-Rel(monolith, prometheus, "Экспортирует метрики", "/actuator/prometheus")
-Rel(batch, prometheus, "Экспортирует метрики", "/actuator/prometheus")
-Rel(prometheus, grafana, "Предоставляет данные для дашбордов", "PromQL")
-Rel(prometheus, alertmanager, "Отправляет алерты", "HTTP")
+Rel(monolith, prometheus, "Экспортирует метрики")
+Rel(batch, prometheus, "Экспортирует метрики")
+Rel(prometheus, grafana, "Предоставляет данные для дашбордов")
+Rel(prometheus, alertmanager, "Отправляет алерты")
 
-Rel(monolith, logstash, "Отправляет логи", "JSON over HTTP")
-Rel(batch, logstash, "Отправляет логи", "JSON over HTTP")
-Rel(logstash, elasticsearch, "Индексирует логи", "HTTP")
-Rel(elasticsearch, kibana, "Предоставляет данные для поиска", "HTTP")
+Rel(monolith, logstash, "Отправляет логи")
+Rel(batch, logstash, "Отправляет логи")
+Rel(logstash, elasticsearch, "Индексирует логи")
+Rel(elasticsearch, kibana, "Предоставляет данные для поиска")
 
-Rel(alertmanager, notification, "Отправляет оповещения", "Webhook")
-Rel(admin, grafana, "Просматривает дашборды", "HTTPS")
-Rel(dev, kibana, "Анализирует логи и ошибки", "HTTPS")
+Rel(alertmanager, notification, "Отправляет оповещения")
+Rel(admin, grafana, "Просматривает дашборды")
+Rel(dev, kibana, "Анализирует логи и ошибки")
 
 @enduml
